@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: feature-flag-service-api
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/feature_flag_service_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - feature-flag-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  db:
+    image: postgres:14-alpine
+    container_name: feature-flag-service-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=feature_flag_service_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - feature-flag-network
+
+volumes:
+  postgres_data:
+
+networks:
+  feature-flag-network:
+    driver: bridge
