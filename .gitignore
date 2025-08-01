@@ -56,3 +56,5 @@ log/
 ### Local Dev ###
 application-local.properties
 application-local.yml
+
+feature-flag-service

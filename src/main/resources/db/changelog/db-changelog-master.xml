@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <changeSet author="aashish" id="1_create_organizations_table">
+        <sqlFile path="scripts/V1__create_organizations_table.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet author="aashish" id="2_create_feature_flags_table">
+        <sqlFile path="scripts/V2__create_feature_flags_table.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+</databaseChangeLog>
