@@ -1,23 +1,34 @@
 package com.featureflags.service;
 
+import com.featureflags.model.FeatureFlag;
+import com.featureflags.repository.FeatureFlagRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FeatureFlagService {
-    // Using ConcurrentHashMap for thread safety
-    private final Map<String, Map<String, Boolean>> featureFlags = new ConcurrentHashMap<>();
+    private final FeatureFlagRepository featureFlagRepository;
 
-    public boolean getFeatureFlag(String orgId, String featureFlagName) {
-        return featureFlags
-                .getOrDefault(orgId, new ConcurrentHashMap<>())
-                .getOrDefault(featureFlagName, false);
+    @Autowired
+    public FeatureFlagService(FeatureFlagRepository featureFlagRepository) {
+        this.featureFlagRepository = featureFlagRepository;
     }
 
-    public void setFeatureFlag(String orgId, String featureFlagName, boolean value) {
-        featureFlags.computeIfAbsent(orgId, k -> new ConcurrentHashMap<>())
-                .put(featureFlagName, value);
+    public boolean getFeatureFlag(Long organizationId, String featureFlagName) {
+        return featureFlagRepository
+                .findByOrganizationIdAndName(organizationId, featureFlagName)
+                .map(FeatureFlag::isEnabled)
+                .orElse(false);
+    }
+
+    @Transactional
+    public void setFeatureFlag(Long organizationId, String featureFlagName, boolean enabled) {
+        FeatureFlag featureFlag = featureFlagRepository
+                .findByOrganizationIdAndName(organizationId, featureFlagName)
+                .orElseGet(() -> new FeatureFlag(featureFlagName, null, enabled, organizationId));
+
+        featureFlag.setEnabled(enabled);
+        featureFlagRepository.save(featureFlag);
     }
 }

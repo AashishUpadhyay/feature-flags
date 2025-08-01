@@ -1,35 +1,46 @@
 package com.featureflags.service;
 
 import com.featureflags.model.Organization;
+import com.featureflags.repository.OrganizationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class OrganizationService {
-    private final Map<String, Organization> organizations = new ConcurrentHashMap<>();
+    private final OrganizationRepository organizationRepository;
 
+    @Autowired
+    public OrganizationService(OrganizationRepository organizationRepository) {
+        this.organizationRepository = organizationRepository;
+    }
+
+    @Transactional
     public void addOrganizations(List<Organization> orgs) {
-        orgs.forEach(org -> organizations.put(org.getId(), org));
+        organizationRepository.saveAll(orgs);
     }
 
+    @Transactional
     public void addOrganization(Organization org) {
-        organizations.put(org.getId(), org);
+        organizationRepository.save(org);
     }
 
-    public Organization getOrganization(String id) {
-        return organizations.get(id);
+    public Organization getOrganization(Long id) {
+        return organizationRepository.findById(id).orElse(null);
     }
 
-    public boolean isValidParentChild(String parentId, String childId) {
+    public boolean isValidParentChild(Long parentId, Long childId) {
         if (parentId == null)
             return true;
-        if (!organizations.containsKey(parentId))
+
+        Optional<Organization> parentOrg = organizationRepository.findById(parentId);
+        if (parentOrg.isEmpty())
             return false;
 
-        String currentId = parentId;
-        Set<String> visited = new HashSet<>();
+        Long currentId = parentId;
+        Set<Long> visited = new HashSet<>();
 
         while (currentId != null) {
             if (currentId.equals(childId))
@@ -37,7 +48,7 @@ public class OrganizationService {
             if (!visited.add(currentId))
                 return false; // Loop detected
 
-            Organization org = organizations.get(currentId);
+            Organization org = organizationRepository.findById(currentId).orElse(null);
             currentId = org != null ? org.getParentId() : null;
         }
 
