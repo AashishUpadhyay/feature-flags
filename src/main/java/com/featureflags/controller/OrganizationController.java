@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.ArrayList;
+
+import com.featureflags.model.OrganizationBulkResult;
 
 @RestController
 @RequestMapping("/organizations")
@@ -20,25 +23,21 @@ public class OrganizationController {
     }
 
     @PostMapping("/bulk")
-    public ResponseEntity<Void> addOrganizations(@RequestBody List<Organization> organizations) {
-        // Validate parent-child relationships
-        for (Organization org : organizations) {
-            if (!organizationService.isValidParentChild(org.getParentId(), org.getId())) {
-                return ResponseEntity.badRequest().build();
-            }
-        }
-        organizationService.addOrganizations(organizations);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<OrganizationBulkResult> processOrganizations(
+            @RequestBody List<Organization> organizations) {
+        // Let the service handle all validations after sorting
+        OrganizationBulkResult result = organizationService.processOrganizations(organizations);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/{orgId}/parent/{parentId}")
     public ResponseEntity<Void> addOrganizationToParent(
-            @PathVariable String orgId,
-            @PathVariable String parentId) {
-        if (!organizationService.isValidParentChild(parentId, orgId)) {
-            return ResponseEntity.badRequest().build();
-        }
-        organizationService.addOrganization(new Organization(orgId, parentId));
+            @PathVariable Long orgId,
+            @PathVariable Long parentId,
+            @RequestParam String name) {
+        Organization org = new Organization(name, parentId);
+        org.setId(orgId);
+        organizationService.addOrganization(org);
         return ResponseEntity.ok().build();
     }
 }

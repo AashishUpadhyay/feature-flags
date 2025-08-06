@@ -13,7 +13,7 @@ public class Organization {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "parent_id")
+    @Column(name = "parent_id", nullable = true)
     private Long parentId;
 
     @Column(name = "created_at", nullable = false, updatable = false)

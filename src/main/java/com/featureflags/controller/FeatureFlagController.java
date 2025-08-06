@@ -19,18 +19,21 @@ public class FeatureFlagController {
 
     @GetMapping("/{orgId}/{featureFlagName}")
     public ResponseEntity<FeatureFlag> getFeatureFlag(
-            @PathVariable String orgId,
+            @PathVariable Long orgId,
             @PathVariable String featureFlagName) {
-        boolean value = featureFlagService.getFeatureFlag(orgId, featureFlagName);
-        return ResponseEntity.ok(new FeatureFlag(orgId, featureFlagName, value));
+        boolean enabled = featureFlagService.getFeatureFlag(orgId, featureFlagName);
+        FeatureFlag featureFlag = new FeatureFlag(featureFlagName, null, enabled, orgId);
+        return ResponseEntity.ok(featureFlag);
     }
 
-    @PostMapping("/{orgId}/{featureFlagName}/{value}")
+    @PostMapping("/{orgId}/{featureFlagName}/{enabled}")
     public ResponseEntity<FeatureFlag> setFeatureFlag(
-            @PathVariable String orgId,
+            @PathVariable Long orgId,
             @PathVariable String featureFlagName,
-            @PathVariable boolean value) {
-        featureFlagService.setFeatureFlag(orgId, featureFlagName, value);
-        return ResponseEntity.ok(new FeatureFlag(orgId, featureFlagName, value));
+            @PathVariable boolean enabled,
+            @RequestParam(required = false) String description) {
+        featureFlagService.setFeatureFlag(orgId, featureFlagName, enabled);
+        FeatureFlag featureFlag = new FeatureFlag(featureFlagName, description, enabled, orgId);
+        return ResponseEntity.ok(featureFlag);
     }
 }

@@ -54,6 +54,22 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>4.19.0</version>
+                <configuration>
+                    <propertyFile>src/main/resources/liquibase.properties</propertyFile>
+                    <changeLogFile>db/changelog/db-changelog-master.xml</changeLogFile>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>42.2.18</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
 </project>

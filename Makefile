@@ -27,7 +27,7 @@ clean: ## Clean the project (remove target directory)
 
 build: ## Compile the project
 	@echo "Building project..."
-	@mvn compile
+	@mvn clean compile
 
 test: ## Run tests
 	@echo "Running tests..."
