@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="1" errors="0" time="4.433178">
+	<testsuite tests="1" failures="1" time="0.013000" name="ittest" timestamp="2025-08-11T10:31:21Z">
+		<properties>
+			<property name="go.version" value="go1.20.14 linux/amd64"></property>
+		</properties>
+		<testcase classname="ittest" name="TestHealthcheck" time="0.010000">
+			<failure message="Failed" type="">=== RUN   TestHealthcheck&#xA;Value of API_HOST environment variable (or default): feature-flag-service-api&#xA;Value of API_PORT environment variable (or default): 8080&#xA;URL:  http://feature-flag-service-api:8080/actuator/health&#xA;    healthcheck_test.go:43: expected body &#34;{\n\t\&#34;environment\&#34;: \&#34;dev\&#34;,\n\t\&#34;status\&#34;: \&#34;available\&#34;,\n\t\&#34;version\&#34;: \&#34;1.0.0\&#34;\n}\n&#34;, got &#34;{\&#34;status\&#34;:\&#34;UP\&#34;,\&#34;components\&#34;:{\&#34;db\&#34;:{\&#34;status\&#34;:\&#34;UP\&#34;,\&#34;details\&#34;:{\&#34;database\&#34;:\&#34;PostgreSQL\&#34;,\&#34;validationQuery\&#34;:\&#34;isValid()\&#34;}},\&#34;diskSpace\&#34;:{\&#34;status\&#34;:\&#34;UP\&#34;,\&#34;details\&#34;:{\&#34;total\&#34;:62671097856,\&#34;free\&#34;:43425734656,\&#34;threshold\&#34;:10485760,\&#34;exists\&#34;:true}},\&#34;featureFlag\&#34;:{\&#34;status\&#34;:\&#34;UP\&#34;,\&#34;details\&#34;:{\&#34;featureFlags\&#34;:\&#34;Database connection is healthy\&#34;,\&#34;organizations\&#34;:\&#34;Database connection is healthy\&#34;}},\&#34;livenessState\&#34;:{\&#34;status\&#34;:\&#34;UP\&#34;},\&#34;ping\&#34;:{\&#34;status\&#34;:\&#34;UP\&#34;},\&#34;readinessState\&#34;:{\&#34;status\&#34;:\&#34;UP\&#34;}},\&#34;groups\&#34;:[\&#34;liveness\&#34;,\&#34;readiness\&#34;]}&#34;&#xA;--- FAIL: TestHealthcheck (0.01s)&#xA;</failure>
+		</testcase>
+	</testsuite>
+</testsuites>

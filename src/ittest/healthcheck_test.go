@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,7 +12,7 @@ import (
 func TestHealthcheck(t *testing.T) {
 	env_vars := ReadEnviornmentVariables()
 
-	url := fmt.Sprintf("http://%s:%s/v1/hc", env_vars.Apihost, env_vars.Apiport)
+	url := fmt.Sprintf("http://%s:%s/actuator/health", env_vars.Apihost, env_vars.Apiport)
 	fmt.Println("URL: ", url)
 	maxRetries := 9
 	for retries := 0; retries < maxRetries; retries++ {
@@ -37,13 +38,57 @@ func TestHealthcheck(t *testing.T) {
 			return
 		}
 
-		received := string(body)
-		want := "{\n\t\"environment\": \"dev\",\n\t\"status\": \"available\",\n\t\"version\": \"1.0.0\"\n}\n"
-		if received != want {
-			t.Errorf("expected body %q, got %q", want, received)
+		// Parse JSON response
+		var healthResponse map[string]interface{}
+		if err := json.Unmarshal(body, &healthResponse); err != nil {
+			t.Errorf("Failed to parse JSON response: %v", err)
 			return
 		}
+
+		// Check overall status
+		status, ok := healthResponse["status"].(string)
+		if !ok || status != "UP" {
+			t.Errorf("Expected overall status 'UP', got %v", healthResponse["status"])
+			return
+		}
+
+		// Check components exist and have UP status
+		components, ok := healthResponse["components"].(map[string]interface{})
+		if !ok {
+			t.Error("Expected 'components' field in response")
+			return
+		}
+
+		expectedComponents := []string{"db", "featureFlag", "livenessState", "ping", "readinessState"}
+		for _, componentName := range expectedComponents {
+			component, exists := components[componentName].(map[string]interface{})
+			if !exists {
+				t.Errorf("Expected component '%s' not found", componentName)
+				return
+			}
+
+			componentStatus, ok := component["status"].(string)
+			if !ok || componentStatus != "UP" {
+				t.Errorf("Expected component '%s' status 'UP', got %v", componentName, component["status"])
+				return
+			}
+		}
+
+		// Check groups array exists
+		groups, ok := healthResponse["groups"].([]interface{})
+		if !ok {
+			t.Error("Expected 'groups' field in response")
+			return
+		}
+
+		if len(groups) < 2 {
+			t.Errorf("Expected at least 2 groups, got %d", len(groups))
+			return
+		}
+
 		fmt.Println("Healthcheck passed successfully.")
+		fmt.Printf("Overall Status: %s\n", status)
+		fmt.Printf("Components checked: %d\n", len(expectedComponents))
 		return
 	}
 }

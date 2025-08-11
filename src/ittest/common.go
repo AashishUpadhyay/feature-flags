@@ -21,7 +21,7 @@ func ReadEnviornmentVariables() TestEnvironmentConfig {
 
 	api_port := os.Getenv("API_PORT")
 	if api_port == "" {
-		api_port_default := "9000"
+		api_port_default := "8080"
 		fmt.Println("Using default Value of API_PORT", api_port_default)
 		api_port = api_port_default
 	}
