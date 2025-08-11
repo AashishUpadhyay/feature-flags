@@ -52,7 +52,11 @@ docker-start: ## Ensure Docker daemon is running (starts Docker Desktop on macOS
 		echo "Docker is already running."; \
 	fi
 
-ittest: docker-start ## Run docker-compose with API, DB and Go-based integration tests
+app: docker-start ## Start API and database services only
+	@echo "Starting API and database services..."
+	@docker compose up --build app db
+
+all: docker-start ## Run docker-compose with API, DB and Go-based integration tests
 	@echo "Building and running compose stack with integration tests..."
 	@docker compose up --build --abort-on-container-exit --exit-code-from ittest
 
