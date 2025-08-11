@@ -64,8 +64,9 @@ public class OrganizationService {
 
         // Save all organizations
         try {
-            this.organizationRepository.saveAll(organizations);
-            return new OrganizationBulkResult(OperationStatus.SUCCESS, SUCCESS_MESSAGE);
+            List<Organization> savedOrgs = this.organizationRepository.saveAll(organizations);
+            return new OrganizationBulkResult(OperationStatus.SUCCESS, SUCCESS_MESSAGE,
+                    savedOrgs.stream().map(org -> org.getId()).collect(Collectors.toList()));
         } catch (Exception e) {
             return new OrganizationBulkResult(OperationStatus.FAILED,
                     "Failed to save organizations: " + e.getMessage());

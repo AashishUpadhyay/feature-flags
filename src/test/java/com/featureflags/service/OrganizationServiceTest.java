@@ -35,14 +35,11 @@ class OrganizationServiceTest {
 
     @BeforeEach
     void setUp() {
-        org1 = new Organization("Parent Org", null);
-        org1.setId(1L);
+        org1 = new Organization(1L, "Parent Org", null);
 
-        org2 = new Organization("Child Org", 1L);
-        org2.setId(2L);
+        org2 = new Organization(2L, "Child Org", 1L);
 
-        org3 = new Organization("Grandchild Org", 2L);
-        org3.setId(3L);
+        org3 = new Organization(3L, "Grandchild Org", 2L);
     }
 
     @Test
@@ -64,8 +61,7 @@ class OrganizationServiceTest {
     @Test
     void processOrganizations_DuplicateParent() {
         // Arrange
-        Organization duplicateOrg = new Organization("Duplicate Child", 1L);
-        duplicateOrg.setId(2L);
+        Organization duplicateOrg = new Organization(2L, "Duplicate Child", 1L);
         List<Organization> organizations = Arrays.asList(org2, duplicateOrg);
 
         // Act
@@ -97,8 +93,8 @@ class OrganizationServiceTest {
         // Arrange
         List<Organization> organizations = Arrays.asList(org1, org2);
         when(organizationRepository.findAllById(any())).thenReturn(Arrays.asList(
-                new Organization("Existing Org 1", 2L),
-                new Organization("Existing Org 2", 1L)));
+                new Organization(1L, "Existing Org 1", 2L),
+                new Organization(2L, "Existing Org 2", 1L)));
 
         // Act
         OrganizationBulkResult result = organizationService.processOrganizations(organizations);
@@ -166,8 +162,7 @@ class OrganizationServiceTest {
     @Test
     void addOrganization_ExistingChildOrganization() {
         // Arrange
-        Organization existingOrg = new Organization("Existing Org", 3L);
-        existingOrg.setId(1L);
+        Organization existingOrg = new Organization(1L, "Existing Org", 3L);
         when(organizationRepository.findById(org1.getId())).thenReturn(Optional.of(existingOrg));
 
         // Act & Assert
@@ -178,7 +173,7 @@ class OrganizationServiceTest {
     @Test
     void addOrganization_ExistingParentOrganization() {
         // Arrange
-        Organization existingOrg = new Organization("Existing Org", null);
+        Organization existingOrg = new Organization(1L, "Existing Org", null);
         existingOrg.setId(1L);
         when(organizationRepository.findById(org1.getId())).thenReturn(Optional.of(existingOrg));
         when(organizationRepository.save(org1)).thenReturn(org1);

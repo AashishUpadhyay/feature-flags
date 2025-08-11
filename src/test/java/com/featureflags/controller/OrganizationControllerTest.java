@@ -39,8 +39,8 @@ class OrganizationControllerTest {
     void processOrganizations_Success_ReturnsBulkResult() {
         // Given
         List<Organization> organizations = Arrays.asList(
-                new Organization("Org1", null),
-                new Organization("Org2", 1L));
+                new Organization(1L, "Org1", null),
+                new Organization(2L, "Org2", 1L));
         OrganizationBulkResult expectedResult = new OrganizationBulkResult(
                 OrganizationBulkResult.OperationStatus.SUCCESS,
                 "Successfully processed organizations");
@@ -60,8 +60,8 @@ class OrganizationControllerTest {
     void processOrganizations_Failure_ReturnsBulkResult() {
         // Given
         List<Organization> organizations = Arrays.asList(
-                new Organization("Org1", null),
-                new Organization("Org2", 999L) // Invalid parent ID
+                new Organization(1L, "Org1", null),
+                new Organization(2L, "Org2", 999L) // Invalid parent ID
         );
         OrganizationBulkResult expectedResult = new OrganizationBulkResult(
                 OrganizationBulkResult.OperationStatus.FAILED,
@@ -81,8 +81,6 @@ class OrganizationControllerTest {
     @Test
     void addOrganizationToParent_Success_ReturnsOk() {
         // Given
-        Organization expectedOrg = new Organization(ORG_NAME, PARENT_ID);
-        expectedOrg.setId(ORG_ID);
         doNothing().when(organizationService).addOrganization(any(Organization.class));
 
         // When
@@ -112,5 +110,32 @@ class OrganizationControllerTest {
             assertEquals(ORG_NAME, org.getName(), "Organization name should match");
             return true;
         }));
+    }
+
+    @Test
+    void getOrganization_ReturnsOrganizationWhenFound() {
+        // Given
+        Organization expectedOrg = new Organization(ORG_ID, ORG_NAME, PARENT_ID);
+        when(organizationService.getOrganization(ORG_ID)).thenReturn(expectedOrg);
+
+        // When
+        ResponseEntity<Organization> response = organizationController.getOrganization(ORG_ID);
+
+        // Then
+        verify(organizationService).getOrganization(ORG_ID);
+        assertEquals(expectedOrg, response.getBody());
+    }
+
+    @Test
+    void getOrganization_ReturnsNullWhenNotFound() {
+        // Given
+        when(organizationService.getOrganization(ORG_ID)).thenReturn(null);
+
+        // When
+        ResponseEntity<Organization> response = organizationController.getOrganization(ORG_ID);
+
+        // Then
+        verify(organizationService).getOrganization(ORG_ID);
+        assertNull(response.getBody());
     }
 }

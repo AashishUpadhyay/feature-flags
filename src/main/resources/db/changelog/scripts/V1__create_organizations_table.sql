@@ -1,7 +1,7 @@
 CREATE TABLE organizations (
-    id SERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    parent_id INTEGER REFERENCES organizations(id),
+    parent_id BIGINT REFERENCES organizations(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

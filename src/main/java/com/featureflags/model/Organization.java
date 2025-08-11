@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 @Table(name = "organizations")
 public class Organization {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -27,8 +26,9 @@ public class Organization {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Organization(String name, Long parentId) {
+    public Organization(Long id, String name, Long parentId) {
         this.name = name;
+        this.id = id;
         this.parentId = parentId;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();

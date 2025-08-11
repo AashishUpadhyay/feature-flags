@@ -1,8 +1,11 @@
 package com.featureflags.model;
 
+import java.util.List;
+
 public class OrganizationBulkResult {
     private OperationStatus status;
     private String message;
+    private List<Long> orgIds;
 
     public enum OperationStatus {
         SUCCESS,
@@ -13,8 +16,13 @@ public class OrganizationBulkResult {
     }
 
     public OrganizationBulkResult(OperationStatus status, String message) {
+        this(status, message, null);
+    }
+
+    public OrganizationBulkResult(OperationStatus status, String message, List<Long> orgIds) {
         this.status = status;
         this.message = message;
+        this.orgIds = orgIds;
     }
 
     public OperationStatus getStatus() {
@@ -31,5 +39,9 @@ public class OrganizationBulkResult {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public List<Long> getOrgIds() {
+        return orgIds;
     }
 }

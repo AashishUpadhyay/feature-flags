@@ -26,6 +26,9 @@ public class OrganizationController {
             @RequestBody List<Organization> organizations) {
         // Let the service handle all validations after sorting
         OrganizationBulkResult result = organizationService.processOrganizations(organizations);
+        if (result.getMessage().contains("FAILED")) {
+            return ResponseEntity.badRequest().body(result);
+        }
         return ResponseEntity.ok(result);
     }
 
@@ -34,9 +37,15 @@ public class OrganizationController {
             @PathVariable Long orgId,
             @PathVariable Long parentId,
             @RequestParam String name) {
-        Organization org = new Organization(name, parentId);
-        org.setId(orgId);
+        Organization org = new Organization(orgId, name, parentId);
         organizationService.addOrganization(org);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{orgId}")
+    public ResponseEntity<Organization> getOrganization(
+            @PathVariable Long orgId) {
+        Organization org = organizationService.getOrganization(orgId);
+        return ResponseEntity.ok(org);
     }
 }
