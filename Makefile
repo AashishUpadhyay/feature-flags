@@ -33,6 +33,32 @@ test: ## Run tests
 	@echo "Running tests..."
 	@mvn test
 
+docker-start: ## Ensure Docker daemon is running (starts Docker Desktop on macOS if needed)
+	@if ! docker info >/dev/null 2>&1; then \
+		echo "Docker is not running. Starting Docker Desktop..."; \
+		if [ "$(shell uname)" = "Darwin" ]; then \
+			open -a Docker; \
+			printf "Waiting for Docker to start"; \
+			until docker info >/dev/null 2>&1; do \
+				printf "."; \
+				sleep 2; \
+			done; \
+			echo "\nDocker is ready."; \
+		else \
+			echo "Please start Docker daemon for your OS and rerun."; \
+			exit 1; \
+		fi; \
+	else \
+		echo "Docker is already running."; \
+	fi
+
+ittest: docker-start ## Run docker-compose with API, DB and Go-based integration tests
+	@echo "Building and running compose stack with integration tests..."
+	@docker compose up --build --abort-on-container-exit --exit-code-from ittest
+
+down: ## Stop compose stack
+	@docker compose down -v
+
 package: clean ## Create JAR package
 	@echo "Creating JAR package..."
 	@mvn package

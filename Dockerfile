@@ -15,19 +15,10 @@ COPY src ./src/
 # Build the application
 RUN ./mvnw package -DskipTests
 
-# Copy the database scripts
-COPY feature-flag-service/db ./db/
-
-# Install required tools for database migration and health checks
-RUN apk add --no-cache postgresql-client unzip bash curl
-
-# Create directory for Liquibase artifacts
-RUN mkdir -p db/artifacts
+# Install curl for healthchecks
+RUN apk add --no-cache curl
 
 EXPOSE 8080
 
-# Copy and set up the entrypoint script
-COPY feature-flag-service/entrypoint.sh ./entrypoint.sh
-RUN chmod +x ./entrypoint.sh
-
-ENTRYPOINT ["./entrypoint.sh"]
+# Run the Spring Boot application
+ENTRYPOINT ["java", "-jar", "/app/target/feature-flags-1.0-SNAPSHOT.jar"]

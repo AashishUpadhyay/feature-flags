@@ -25,6 +25,22 @@ services:
       retries: 3
       start_period: 40s
 
+  ittest:
+    build:
+      context: ./src/ittest
+      dockerfile: Dockerfile
+    container_name: feature-flag-service-ittest
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      - API_HOST=feature-flag-service-api
+      - API_PORT=8080
+    volumes:
+      - ./test-results:/app/data
+    networks:
+      - feature-flag-network
+
   db:
     image: postgres:14-alpine
     container_name: feature-flag-service-db
