@@ -58,3 +58,4 @@ application-local.properties
 application-local.yml
 
 feature-flag-service
+test-results/
