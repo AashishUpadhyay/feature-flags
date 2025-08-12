@@ -168,4 +168,24 @@ public class OrganizationService {
             throw new IllegalArgumentException(ERROR_INVALID_ORG);
         }
     }
+
+    /**
+     * Get all descendant organizations (children, grandchildren, etc.) of a given
+     * organization
+     * This is used for hierarchical feature flag propagation
+     */
+    public List<Long> getAllDescendantIds(Long organizationId) {
+        List<Long> allDescendants = new ArrayList<>();
+        collectDescendants(organizationId, allDescendants);
+        return allDescendants;
+    }
+
+    private void collectDescendants(Long parentId, List<Long> descendants) {
+        List<Organization> directChildren = organizationRepository.findByParentId(parentId);
+        for (Organization child : directChildren) {
+            descendants.add(child.getId());
+            // Recursively collect descendants of this child
+            collectDescendants(child.getId(), descendants);
+        }
+    }
 }

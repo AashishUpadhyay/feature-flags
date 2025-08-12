@@ -2,6 +2,7 @@ package com.featureflags.service;
 
 import com.featureflags.model.FeatureFlag;
 import com.featureflags.repository.FeatureFlagRepository;
+import com.featureflags.repository.FeatureFlagJobRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,12 +20,19 @@ class FeatureFlagServiceTest {
 
         @Mock
         private FeatureFlagRepository featureFlagRepository;
+        @Mock
+        private FeatureFlagJobRepository jobRepository;
+        @Mock
+        private FeatureFlagBackgroundService backgroundService;
+        @Mock
+        private OrganizationService organizationService;
 
         private FeatureFlagService featureFlagService;
 
         @BeforeEach
         void setUp() {
-                featureFlagService = new FeatureFlagService(featureFlagRepository);
+                featureFlagService = new FeatureFlagService(featureFlagRepository, jobRepository, backgroundService,
+                                organizationService);
         }
 
         @Test

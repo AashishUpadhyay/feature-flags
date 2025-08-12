@@ -12,4 +12,8 @@
     <changeSet author="aashish" id="2_create_feature_flags_table">
         <sqlFile path="scripts/V2__create_feature_flags_table.sql" relativeToChangelogFile="true"/>
     </changeSet>
+
+    <changeSet author="aashish" id="3_create_feature_flag_jobs_table">
+        <sqlFile path="scripts/V3__create_feature_flag_jobs_table.sql" relativeToChangelogFile="true"/>
+    </changeSet>
 </databaseChangeLog>
